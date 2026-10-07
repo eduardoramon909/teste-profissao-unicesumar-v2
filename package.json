@@ -1,0 +1,27 @@
+{
+  "name": "teste-profissao-unicesumar",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Teste de Profissão UniCesumar — questionário rápido para feiras de profissões, com painel admin de leads.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@fontsource-variable/plus-jakarta-sans": "^5.1.0",
+    "exceljs": "^4.4.0",
+    "firebase": "^10.14.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
