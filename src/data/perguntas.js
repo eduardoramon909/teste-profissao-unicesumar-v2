@@ -45,7 +45,7 @@ export const PERGUNTAS_AREA = [
   ], { bloco: 'area' }),
 
   q('area3', 'O que você mais gostaria de fazer?', [
-    o('👩‍🍳', 'Criar pratos e experiências com comida', { a: { alimentos: 3, negocios: 1 }, t: { gastro: 3 } }),
+    o('🍳', 'Criar pratos e experiências com comida', { a: { alimentos: 3, negocios: 1 }, t: { gastro: 3 } }),
     o('📐', 'Projetar e construir soluções', { a: { engenharia: 3, tecnologia: 1 }, t: { pratico: 1, cientifico: 1, criar: 1 } }),
     o('🌎', 'Cuidar da natureza e dos animais', { a: { ambiente: 3, saude: 1 }, t: { natureza: 3 } }),
     o('🎓', 'Ensinar e ajudar os outros a aprender', { a: { educacao: 3 }, t: { ensinar: 3 } }),
@@ -100,7 +100,7 @@ export const PERGUNTAS_GOSTOS = [
     o('🗣️', 'Agitada, com muita gente', { t: { pessoas: 2, comunicar: 2 } }),
     o('📋', 'Organizada e previsível', { t: { organizar: 3, numeros: 1, lei: 1 } }),
     o('🌤️', 'Ao ar livre, em movimento', { t: { natureza: 2, pratico: 2, esporte: 1 } }),
-    o('🧑‍💻', 'Focada, no computador ou laboratório', { t: { tecnologia: 2, cientifico: 2 } }),
+    o('💻', 'Focada, no computador ou laboratório', { t: { tecnologia: 2, cientifico: 2 } }),
   ], { bloco: 'gosto' }),
 
   q('gosto5', 'O que mais te motiva?', [
@@ -119,9 +119,9 @@ export const PERGUNTAS_ESPECIFICAS = {
   educacao: [
     esp('educacao', 1, 'Que tipo de aluno você quer ajudar?', [
       o('👶', 'Crianças pequenas', { t: { ensinar: 2, cuidar: 1 }, f: { pedagogia: 3, psicopedagogia: 1 } }),
-      o('🧑‍🎓', 'Adolescentes e jovens', { t: { ensinar: 2, pessoas: 1 }, f: { docencia: 2, 'ensino-humanas': 1, 'ensino-exatas': 1 } }),
+      o('🎓', 'Adolescentes e jovens', { t: { ensinar: 2, pessoas: 1 }, f: { docencia: 2, 'ensino-humanas': 1, 'ensino-exatas': 1 } }),
       o('🧩', 'Alunos com necessidades especiais', { t: { cuidar: 2, social: 1 }, f: { inclusao: 3, psicopedagogia: 2 } }),
-      o('👩‍💼', 'Adultos e profissionais', { t: { ensinar: 1, comunicar: 1 }, f: { docencia: 2, 'edu-tec': 1, rh: 1 } }),
+      o('💼', 'Adultos e profissionais', { t: { ensinar: 1, comunicar: 1 }, f: { docencia: 2, 'edu-tec': 1, rh: 1 } }),
     ]),
     esp('educacao', 2, 'Qual matéria te empolga mais?', [
       o('➗', 'Matemática e Ciências', { t: { cientifico: 2, numeros: 1 }, f: { 'ensino-exatas': 3, 'ensino-biologia': 2 } }),
@@ -191,7 +191,7 @@ export const PERGUNTAS_ESPECIFICAS = {
       o('🎮', 'Criar jogos', { t: { criar: 2 }, f: { games: 3 } }),
     ]),
     esp('tecnologia', 2, 'Qual parte do projeto é sua?', [
-      o('🧑‍💻', 'Programar', { f: { dev: 3 } }),
+      o('💻', 'Programar', { f: { dev: 3 } }),
       o('🎨', 'Desenhar telas e experiência', { t: { criar: 2 }, f: { ux: 3, games: 1 } }),
       o('🧪', 'Testar e garantir qualidade', { t: { organizar: 1, cientifico: 1 }, f: { 'qualidade-sw': 3 } }),
       o('🗓️', 'Coordenar equipe e prazos', { t: { lideranca: 2 }, f: { 'gestao-ti': 3, projetos: 1 } }),
@@ -278,7 +278,7 @@ export const PERGUNTAS_ESPECIFICAS = {
       o('🧠', 'Argumentando com lógica', { t: { lei: 1, comunicar: 1 }, f: { direito: 2 } }),
       o('🧩', 'Investigando pistas', { t: { cientifico: 1 }, f: { seguranca: 2 } }),
       o('🫶', 'Ouvindo e acolhendo', { t: { pessoas: 2 }, f: { 'servico-social': 2 } }),
-      o('🧑‍💼', 'Planejando e decidindo', { t: { lideranca: 1 }, f: { governanca: 2, politica: 1, 'gestao-publica': 1 } }),
+      o('📋', 'Planejando e decidindo', { t: { lideranca: 1 }, f: { governanca: 2, politica: 1, 'gestao-publica': 1 } }),
     ]),
   ],
 
@@ -335,8 +335,8 @@ export const PERGUNTAS_ESPECIFICAS = {
       o('🌿', 'Soluções sustentáveis', { f: { energia: 2, 'eng-civil': 1 }, kw: ['sustent', 'renov'] }),
     ]),
     esp('engenharia', 4, 'Você se vê…', [
-      o('🧑‍🔧', 'Resolvendo problemas técnicos', { t: { cientifico: 2 }, f: { 'eletrica-automacao': 1, mecanica: 1, 'eng-civil': 1 } }),
-      o('🧑‍💼', 'Coordenando a operação', { t: { lideranca: 1, organizar: 1 }, f: { producao: 2, 'seg-trabalho': 1 } }),
+      o('🔧', 'Resolvendo problemas técnicos', { t: { cientifico: 2 }, f: { 'eletrica-automacao': 1, mecanica: 1, 'eng-civil': 1 } }),
+      o('📋', 'Coordenando a operação', { t: { lideranca: 1, organizar: 1 }, f: { producao: 2, 'seg-trabalho': 1 } }),
       o('🛡️', 'Fiscalizando e orientando', { t: { lei: 1 }, f: { 'seg-trabalho': 2 } }),
       o('📐', 'Projetando e desenhando', { t: { criar: 2 }, f: { arquitetura: 2, 'eng-civil': 1 } }),
     ]),
@@ -371,7 +371,7 @@ export const PERGUNTAS_ESPECIFICAS = {
 
   alimentos: [
     esp('alimentos', 1, 'Na cozinha, você prefere…', [
-      o('👩‍🍳', 'Criar pratos', { f: { gastronomia: 3 } }),
+      o('🍳', 'Criar pratos', { f: { gastronomia: 3 } }),
       o('🎂', 'Confeitaria e doces', { f: { gastronomia: 3 }, kw: ['confeitaria'] }),
       o('🧪', 'Entender como o alimento é feito', { t: { cientifico: 2 }, f: { 'tec-alimentos': 3 } }),
       o('💼', 'Gerenciar restaurante ou negócio', { t: { lideranca: 2 }, f: { 'gastro-negocios': 3 } }),

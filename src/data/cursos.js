@@ -2,7 +2,9 @@
 // Campos: id (ID_CURSO da planilha; null = só existe no folheto), nome (exibição), oficial (NM_CURSO exato da planilha),
 //   tipo, mod (EAD | Semipresencial | Híbrida), secao (divisão do folheto), area/familia (usados pelo motor do teste),
 //   folheto (aparece nos folhetos), novo (selo NOVO), restrito (não entra nas recomendações do teste; continua no seletor).
-export const CURSOS = [
+import { visivel } from './ocultar.js';
+
+const TODOS = [
 {"id":1533,"nome":"Acompanhamento do Transtorno do Espectro Autista","tipo":"graduacao","mod":"EAD","secao":"Educação","area":"educacao","familia":"inclusao","oficial":"ACOMPANHAMENTO DO TRANSTORNO DO ESPECTRO AUTISTA (GRADUAÇÃO - EAD)","folheto":true},
 {"id":1747,"nome":"Acompanhamento do Transtorno do Espectro Autista","tipo":"graduacao","mod":"Semipresencial","secao":"Educação","area":"educacao","familia":"inclusao","oficial":"ACOMPANHAMENTO DO TRANSTORNO DO ESPECTRO AUTISTA (GRADUAÇÃO - SEMIPRESENCIAL)","folheto":true},
 {"id":565,"nome":"Educação Física (Licenciatura)","tipo":"graduacao","mod":"EAD","secao":"Educação","area":"educacao","familia":"ensino-fisica","oficial":"EDUCAÇÃO FÍSICA - LICENCIATURA (GRADUAÇÃO - EAD)","folheto":true},
@@ -521,5 +523,8 @@ export const CURSOS = [
 {"id":1393,"nome":"Políticas Públicas e o Acesso à Saúde","tipo":"profissionalizante","mod":"EAD","secao":"Direito e Humanidades","area":"saude","familia":"saude-coletiva","oficial":"POLÍTICAS PÚBLICAS E O ACESSO À SAÚDE (PROFISSIONALIZANTE - EAD)","folheto":true},
 {"id":1399,"nome":"Práticas Sociais de Líderes em Instituições Religiosas","tipo":"profissionalizante","mod":"EAD","secao":"Direito e Humanidades","area":"direito","familia":"teologia","oficial":"PRÁTICAS SOCIAIS DE LÍDERES EM INSTITUIÇÕES RELIGIOSAS (PROFISSIONALIZANTE - EAD)","folheto":true}
 ];
+
+// o que aparece no app (veja src/data/ocultar.js)
+export const CURSOS = TODOS.filter(visivel);
 
 export const SECOES = {"graduacao":["Educação","Gestão e Negócios","Tecnologia","Saúde e Bem-estar","Saúde Animal","Artes e Design","Comunicação","Engenharias e Arquitetura","Agrárias e Meio Ambiente","Alimentos e Bebidas","Jurídico e Segurança"],"pos":["Educação","Negócios","Saúde e Bem-estar","Tecnologia e Inovação","Direito e Humanidades","Meio Ambiente"],"tecnico":["Educação","Negócios","Saúde e Meio Ambiente","Tecnologia e Inovação"],"profissionalizante":["Educação","Negócios","Saúde e Meio Ambiente","Tecnologia e Inovação","Direito e Humanidades"]};

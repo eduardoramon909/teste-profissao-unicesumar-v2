@@ -9,6 +9,7 @@ export default function Perguntas({ pergunta, indice, total, valor, onResponder,
   const [marcado, setMarcado] = useState(null);
   const timer = useRef(null);
   const travado = useRef(false);
+  
   useEffect(() => () => clearTimeout(timer.current), []);
 
   // Toque na resposta: destaca por um instante e avança sozinho
@@ -26,12 +27,15 @@ export default function Perguntas({ pergunta, indice, total, valor, onResponder,
     <div className="tela tela-pergunta">
       <div className="conteudo">
         <header className="barra-quiz">
-          <button type="button" className="btn-icone claro" onClick={onVoltar} aria-label="Voltar"><IcVoltar /></button>
+          <button type="button" className="btn-icone claro" onClick={onVoltar} aria-label="Voltar">
+            <IcVoltar />
+          </button>
           <span className="contador">Pergunta {indice + 1} de {total}</span>
           <span className={`cronometro${estourou ? ' estourou' : ''}`} title={`Meta: ${CONFIG.META_SEGUNDOS} segundos`}>
             <IcRelogio width={16} height={16} /> {fmt(segundos)}
           </span>
         </header>
+        
         <div className="progresso" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={indice + 1}>
           <span style={{ width: `${((indice + 1) / total) * 100}%` }} />
         </div>
@@ -44,8 +48,17 @@ export default function Perguntas({ pergunta, indice, total, valor, onResponder,
           <ul className="opcoes">
             {pergunta.opcoes.map((op, i) => (
               <li key={i}>
-                <button type="button" className={`opcao${atual === i ? ' marcada' : ''}`} onClick={() => escolher(i)}>
-                  <span className="opcao-emoji" aria-hidden="true">{op.emoji}</span>
+                <button 
+                  type="button" 
+                  className={`opcao${atual === i ? ' marcada' : ''}`} 
+                  onClick={() => escolher(i)}
+                  // Aplicação do Flexbox para proteger o emoji e alinhar os itens
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left' }}
+                >
+                  {/* flexShrink: 0 impede que o emoji diminua de tamanho ou seja cortado */}
+                  <span className="opcao-emoji" aria-hidden="true" style={{ flexShrink: 0 }}>
+                    {op.emoji}
+                  </span>
                   <span className="opcao-texto">{op.texto}</span>
                 </button>
               </li>

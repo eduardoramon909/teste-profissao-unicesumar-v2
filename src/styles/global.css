@@ -199,7 +199,8 @@ input:not([type]):focus, input[type='text']:focus, input[type='tel']:focus, inpu
 .opcao:hover { border-color: var(--cyan); }
 .opcao:active { transform: scale(0.985); }
 .opcao.marcada { background: var(--cyan); border-color: #fff; color: var(--navy-deep); }
-.opcao-emoji { flex: none; width: 38px; text-align: center; font-size: 28px; line-height: 1; }
+.opcao-emoji { flex: none; min-width: 38px; text-align: center; font-size: 28px; line-height: 1; white-space: nowrap; }
+.opcao-texto { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 
 .sanfona { display: grid; gap: 12px; }
 .sanfona-item { background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 14px rgba(5, 15, 35, 0.22); border: 3px solid transparent; }
@@ -208,7 +209,7 @@ input:not([type]):focus, input[type='text']:focus, input[type='tel']:focus, inpu
   width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 18px; min-height: 66px; text-align: left;
   background: none; border: 0; cursor: pointer; color: var(--navy); font-size: 18px; font-weight: 800;
 }
-.sanfona-emoji { font-size: 28px; width: 38px; text-align: center; line-height: 1; }
+.sanfona-emoji { font-size: 28px; min-width: 38px; text-align: center; line-height: 1; white-space: nowrap; }
 .sanfona-titulo { flex: 1; }
 .sanfona-seta { transition: transform 0.2s; color: var(--suave); }
 .sanfona-item.aberto .sanfona-seta { transform: rotate(180deg); }
@@ -307,11 +308,10 @@ input:not([type]):focus, input[type='text']:focus, input[type='tel']:focus, inpu
 .seletor-busca:focus-within { border-color: var(--azure); background: #fff; }
 .seletor-busca svg { flex: none; }
 .seletor-busca input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 14px 0; font-size: 17px; color: var(--ink); outline: none; }
-.abas { display: flex; gap: 8px; overflow-x: auto; padding: 8px 18px 10px; scrollbar-width: none; }
-.abas::-webkit-scrollbar { display: none; }
+.abas { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 18px 10px; }
 .aba {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px; cursor: pointer;
-  border: 2px solid var(--linha); background: #fff; color: var(--navy); font-size: 14px; font-weight: 700;
+  flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; cursor: pointer;
+  border: 2px solid var(--linha); background: #fff; color: var(--navy); font-size: 13.5px; font-weight: 700;
 }
 .aba.ativa { background: var(--navy); border-color: var(--navy); color: #fff; }
 .aba-n { font-size: 12px; opacity: 0.75; }

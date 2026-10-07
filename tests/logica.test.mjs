@@ -58,7 +58,7 @@ test('Ação = dia no fuso de Belém/São Paulo', () => {
 
 // ------------------------------------------------------------------ dados
 test('Catálogo de cursos é consistente', () => {
-  assert.ok(CURSOS.length >= 500);
+  assert.ok(CURSOS.length >= 400);
   const oficiais = new Set(CURSOS_OFICIAIS.map(([nm]) => nm));
   const vistos = new Set();
   for (const c of CURSOS) {
