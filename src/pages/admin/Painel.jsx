@@ -63,11 +63,17 @@ export default function Painel({ repo, user }) {
   const acaoAtual = acoes?.find((a) => a.id === sel);
   useEffect(() => { setNomeAcao(acaoAtual?.nome || ''); }, [sel, acaoAtual?.nome]);
 
+  // Apenas conta duplicados de leads que realmente possuem CPF
   const duplicados = useMemo(() => {
     const c = {};
-    (leads || []).forEach((l) => { c[l.cpf] = (c[l.cpf] || 0) + 1; });
+    (leads || []).forEach((l) => {
+      if (l.cpf) {
+        c[l.cpf] = (c[l.cpf] || 0) + 1;
+      }
+    });
     return c;
   }, [leads]);
+
   const qtdRepetidos = useMemo(() => Object.values(duplicados).reduce((s, n) => s + Math.max(0, n - 1), 0), [duplicados]);
 
   const filtrados = useMemo(() => {
@@ -75,7 +81,9 @@ export default function Painel({ repo, user }) {
     const termos = normalizar(busca).split(' ').filter(Boolean);
     if (!termos.length) return ordenados;
     return ordenados.filter((l) => {
-      const palheiro = normalizar(`${l.nome} ${l.cpf} ${formatarCPF(l.cpf)} ${l.whatsapp} ${l.email || ''} ${nomeDoCursoDoLead(l)} ${situacao(l)}`);
+      const cpfTxt = l.cpf || '';
+      const cpfFmt = l.cpf ? formatarCPF(l.cpf) : '';
+      const palheiro = normalizar(`${l.nome || ''} ${cpfTxt} ${cpfFmt} ${l.whatsapp || ''} ${l.email || ''} ${nomeDoCursoDoLead(l)} ${situacao(l)}`);
       return termos.every((t) => palheiro.includes(t));
     });
   }, [leads, busca]);
@@ -228,14 +236,16 @@ export default function Painel({ repo, user }) {
                             <td data-label="Hora">{formatarHora(l.criadoEm)}</td>
                             <td data-label="Nome">
                               <strong>{l.nome}</strong>
-                              {duplicados[l.cpf] > 1 && <em className="selo aviso">CPF repetido</em>}
+                              {l.cpf && duplicados[l.cpf] > 1 && <em className="selo aviso">CPF repetido</em>}
                             </td>
                             <td data-label="WhatsApp">
                               <a className="link-whats" href={`https://wa.me/55${l.whatsapp}`} target="_blank" rel="noreferrer">
                                 <IcWhats width={16} height={16} /> {formatarWhatsapp(l.whatsapp)}
                               </a>
                             </td>
-                            <td data-label="CPF">{formatarCPF(l.cpf)}</td>
+                            <td data-label="CPF">
+                              {l.cpf ? formatarCPF(l.cpf) : <span className="vazio-txt">Sem CPF</span>}
+                            </td>
                             <td data-label="Curso pretendido">
                               {l.cursoPretendido ? (
                                 <>
