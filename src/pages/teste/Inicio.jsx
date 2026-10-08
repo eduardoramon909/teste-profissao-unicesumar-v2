@@ -13,10 +13,15 @@ export function validarForm(f) {
   const e = {};
   if (!nomeValido(f.nome)) e.nome = 'Digite seu nome completo (nome e sobrenome).';
   if (!whatsappValido(f.whatsapp)) e.whatsapp = 'Informe o WhatsApp com DDD. Ex.: (91) 98888-7777';
-  const d = apenasDigitos(f.cpf);
-  if (d.length !== 11) e.cpf = 'O CPF tem 11 números.';
-  else if (!cpfValido(d)) e.cpf = 'Esse CPF não parece válido. Confira os números.';
-  if (CONFIG.COLETAR_EMAIL && f.email.trim() && !emailValido(f.email)) e.email = 'E-mail inválido.';
+  
+  // O CPF agora só é validado se o usuário digitar algo (tornando-o opcional)
+  const d = apenasDigitos(f.cpf || '');
+  if (d.length > 0) {
+    if (d.length !== 11) e.cpf = 'O CPF tem 11 números.';
+    else if (!cpfValido(d)) e.cpf = 'Esse CPF não parece válido. Confira os números.';
+  }
+
+  if (CONFIG.COLETAR_EMAIL && (f.email || '').trim() && !emailValido(f.email)) e.email = 'E-mail inválido.';
   if (CONFIG.EXIGIR_CONSENTIMENTO && !f.consent) e.consent = 'Marque a autorização para continuar.';
   return e;
 }
@@ -28,7 +33,7 @@ export default function Inicio({ form, setForm, onSubmit, enviando }) {
   const erro = (campo) => ((tentou || tocados[campo]) && erros[campo]) || undefined;
   const tocar = (campo) => () => setTocados((t) => ({ ...t, [campo]: true }));
   const set = (campo) => (valor) => setForm((f) => ({ ...f, [campo]: valor }));
-  const cpfOk = apenasDigitos(form.cpf).length === 11 && cpfValido(form.cpf);
+  const cpfOk = apenasDigitos(form.cpf || '').length === 11 && cpfValido(form.cpf || '');
 
   function enviar(e) {
     e.preventDefault();
@@ -71,7 +76,8 @@ export default function Inicio({ form, setForm, onSubmit, enviando }) {
             />
           </Campo>
 
-          <Campo id="f-cpf" rotulo="CPF" erro={erro('cpf')}>
+          {/* Foi adicionada a propriedade "opcional" aqui no Campo do CPF */}
+          <Campo id="f-cpf" rotulo="CPF" opcional erro={erro('cpf')}>
             <div className="input-ok">
               <input
                 id="f-cpf" type="text" inputMode="numeric" value={form.cpf}
