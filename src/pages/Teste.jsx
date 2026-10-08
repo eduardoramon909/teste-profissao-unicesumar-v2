@@ -74,10 +74,7 @@ export default function Teste() {
   }, [novoParticipante]);
 
   const dadosBase = () => {
-    // CORREÇÃO AQUI: Se o CPF estiver em branco, enviamos 11 zeros 
-    // para enganar a regra do firestore.rules e salvar o lead.
-    const cpfLimpo = form.cpf ? apenasDigitos(form.cpf) : '00000000000';
-    
+    const cpfLimpo = apenasDigitos(form.cpf || ''); // '' quando não preenchido
     return {
       nome: formatarNome(form.nome),
       whatsapp: normalizarWhatsapp(form.whatsapp),
