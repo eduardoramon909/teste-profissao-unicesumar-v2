@@ -26,16 +26,18 @@ const STATUS = {
 const tempo = (l) => paraData(l.criadoEm)?.getTime() ?? 0;
 export const porHorario = (a, b) => tempo(a) - tempo(b);
 
-/** Mantém um registro por CPF: prefere o que tem curso escolhido e, depois, o mais recente. */
+/** Mantém um registro por CPF: prefere o que tem curso escolhido e, depois, o mais recente.
+ *  Leads sem CPF (cpf === '') nunca são agrupados — cada um é único. */
 export function deduplicarPorCpf(leads) {
   const melhor = new Map();
   for (const l of leads) {
+    if (!l.cpf) continue; // sem CPF → não participa da deduplicação
     const atual = melhor.get(l.cpf);
     if (!atual) { melhor.set(l.cpf, l); continue; }
     const pontos = (x) => (x.cursoPretendido ? 1e15 : 0) + tempo(x);
     if (pontos(l) > pontos(atual)) melhor.set(l.cpf, l);
   }
-  return leads.filter((l) => melhor.get(l.cpf) === l);
+  return leads.filter((l) => !l.cpf || melhor.get(l.cpf) === l);
 }
 
 export function nomeArquivo(acao) {
