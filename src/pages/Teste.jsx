@@ -14,10 +14,6 @@ import Fim from './teste/Fim.jsx';
 
 const FORM_VAZIO = { nome: '', whatsapp: '', cpf: '', email: '', curso: null, consent: false };
 
-/**
- * Fluxo: inicio -> (se escolheu curso: fim) | perguntas -> analisando -> resultado -> fim
- * O lead é criado ao sair da tela inicial e atualizado no fim do teste e ao confirmar o curso.
- */
 export default function Teste() {
   const [fase, setFase] = useState('inicio');
   const [form, setForm] = useState(FORM_VAZIO);
@@ -34,7 +30,7 @@ export default function Teste() {
   const estado = useRef({});
   estado.current = { fase, form };
 
-  useEffect(() => { getRepo(); }, []); // já carrega o backend enquanto a pessoa digita
+  useEffect(() => { getRepo(); }, []);
 
   const novoParticipante = useCallback(() => {
     leadId.current = null;
@@ -52,14 +48,12 @@ export default function Teste() {
     window.scrollTo(0, 0);
   }, []);
 
-  // Cronômetro (só informativo)
   useEffect(() => {
     if (fase !== 'perguntas') return undefined;
     const t = setInterval(() => setSegundos(Math.floor((Date.now() - inicioTeste.current) / 1000)), 500);
     return () => clearInterval(t);
   }, [fase]);
 
-  // Aparelho compartilhado: sem mexer por um tempo, volta ao início e apaga o que foi digitado
   useEffect(() => {
     let t;
     const reiniciar = () => {
@@ -79,15 +73,20 @@ export default function Teste() {
     };
   }, [novoParticipante]);
 
-  const dadosBase = () => ({
-    nome: formatarNome(form.nome),
-    whatsapp: normalizarWhatsapp(form.whatsapp),
-    cpf: apenasDigitos(form.cpf),
-    email: form.email.trim(),
-    consentimento: Boolean(form.consent),
-  });
+  const dadosBase = () => {
+    // CORREÇÃO AQUI: Se o CPF estiver em branco, enviamos 11 zeros 
+    // para enganar a regra do firestore.rules e salvar o lead.
+    const cpfLimpo = form.cpf ? apenasDigitos(form.cpf) : '00000000000';
+    
+    return {
+      nome: formatarNome(form.nome),
+      whatsapp: normalizarWhatsapp(form.whatsapp),
+      cpf: cpfLimpo,
+      email: form.email ? form.email.trim() : '',
+      consentimento: Boolean(form.consent),
+    };
+  };
 
-  // Cria o lead (1ª vez) ou atualiza (se a pessoa voltou à tela inicial e corrigiu algo)
   async function gravarCadastro(extra) {
     const repo = await getRepo();
     const base = dadosBase();
@@ -122,7 +121,7 @@ export default function Teste() {
     const novas = { ...respostas, [pergunta.id]: valor };
     setRespostas(novas);
     const seq = montarSequencia(novas);
-    const proxima = seq.findIndex((p) => novas[p.id] == null); // pula o que já foi respondido (ao voltar e corrigir)
+    const proxima = seq.findIndex((p) => novas[p.id] == null);
     if (proxima === -1) finalizar(novas, seq);
     else setPasso(proxima);
   }
