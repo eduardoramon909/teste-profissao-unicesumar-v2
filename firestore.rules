@@ -59,7 +59,7 @@ service cloud.firestore {
              ])
         && d.nome is string && d.nome.size() >= 3 && d.nome.size() <= 120
         && d.whatsapp is string && d.whatsapp.size() >= 10 && d.whatsapp.size() <= 13
-        && d.cpf is string && d.cpf.matches('^[0-9]{11}$')
+        && d.cpf is string && (d.cpf == '' || d.cpf.matches('^[0-9]{11}$'))
         && d.acaoId is string && d.acaoId.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
         && (!('email' in d) || (d.email is string && d.email.size() <= 120))
         && (!('cursoPretendido' in d) || (d.cursoPretendido is string && d.cursoPretendido.size() <= 200))
