@@ -140,3 +140,72 @@ const repo = {
 };
 
 export default repo;
+
+// ================================================================
+//  MÉTODOS EXTRAS — Matrículas, Metas, Processos, Campanhas
+// ================================================================
+const matriculasCol = () => collection(db, 'matriculas');
+const metasCol = () => collection(db, 'metas');
+const processosCol = () => collection(db, 'processos');
+const campanhasCol = () => collection(db, 'campanhas');
+
+Object.assign(repo, {
+  // ---------- Matrículas ----------
+  criarMatricula(id, dados) {
+    return setDoc(doc(db, 'matriculas', id), { ...limpar(dados), criadoEm: serverTimestamp(), atualizadoEm: serverTimestamp() });
+  },
+  novaMatriculaId: () => doc(matriculasCol()).id,
+  atualizarMatricula(id, patch) {
+    return updateDoc(doc(db, 'matriculas', id), { ...limpar(patch), atualizadoEm: serverTimestamp() });
+  },
+  excluirMatricula(id) {
+    return deleteDoc(doc(db, 'matriculas', id));
+  },
+  observarMatriculas(processoId, cb, erro) {
+    const q = processoId
+      ? query(matriculasCol(), where('processoId', '==', processoId))
+      : matriculasCol();
+    return onSnapshot(q, (snap) => cb(snap.docs.map((d) => {
+      const x = d.data({ serverTimestamps: 'estimate' });
+      return { ...x, id: d.id, criadoEm: ts(x.criadoEm), atualizadoEm: ts(x.atualizadoEm) };
+    })), erro);
+  },
+
+  // ---------- Metas ----------
+  salvarMeta(processoId, dados) {
+    return setDoc(doc(db, 'metas', processoId), { ...limpar(dados), atualizadoEm: serverTimestamp() }, { merge: true });
+  },
+  observarMeta(processoId, cb, erro) {
+    return onSnapshot(doc(db, 'metas', processoId), (snap) => cb(snap.exists() ? snap.data() : null), erro);
+  },
+
+  // ---------- Processos ----------
+  criarProcesso(id, dados) {
+    return setDoc(doc(db, 'processos', id), { ...limpar(dados), criadoEm: serverTimestamp() });
+  },
+  atualizarProcesso(id, patch) {
+    return updateDoc(doc(db, 'processos', id), limpar(patch));
+  },
+  excluirProcesso(id) {
+    return deleteDoc(doc(db, 'processos', id));
+  },
+  observarProcessos(cb, erro) {
+    return onSnapshot(processosCol(), (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), erro);
+  },
+
+  // ---------- Campanhas ----------
+  criarCampanha(id, dados) {
+    return setDoc(doc(db, 'campanhas', id), { ...limpar(dados), criadoEm: serverTimestamp() });
+  },
+  atualizarCampanha(id, patch) {
+    return updateDoc(doc(db, 'campanhas', id), limpar(patch));
+  },
+  excluirCampanha(id) {
+    return deleteDoc(doc(db, 'campanhas', id));
+  },
+  observarCampanhas(cb, erro) {
+    return onSnapshot(campanhasCol(), (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), erro);
+  },
+  novoCampanhaId: () => doc(campanhasCol()).id,
+  novaProcessoId: () => doc(processosCol()).id,
+});
