@@ -626,3 +626,75 @@ input:not([type]):focus, input[type='text']:focus, input[type='tel']:focus, inpu
   .dash { padding: 14px; }
   .metas-wrap, .soumais-wrap, .campanhas-wrap, .processo-wrap { padding: 14px; }
 }
+
+/* ── Grid de produtos (6 colunas) ── */
+.grid-produtos-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* ── Dias de exceção ── */
+.excecoes-lista { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.excecao-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #ffe9b8; color: #7a5200; border-radius: 8px;
+  padding: 4px 10px; font-size: 13px; font-weight: 600;
+}
+.excecao-remove {
+  background: none; border: 0; cursor: pointer; color: #7a5200;
+  font-size: 16px; line-height: 1; padding: 0 2px;
+}
+.excecao-remove:hover { color: var(--erro); }
+
+/* ── Tutor bloco na aba Metas ── */
+.tutor-bloco {
+  border: 2px solid var(--linha); border-radius: 14px;
+  padding: 14px 16px; margin-bottom: 12px; background: var(--nevoa);
+}
+.tutor-bloco-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+
+/* ── Gap por tutor no Dashboard ── */
+.dash-tutores-header {
+  display: grid; grid-template-columns: 160px 1fr 70px 44px 60px;
+  gap: 10px; padding: 0 0 6px; border-bottom: 2px solid var(--linha);
+  font-size: 12px; font-weight: 700; color: var(--suave); text-transform: uppercase;
+  letter-spacing: .04em; margin-bottom: 8px;
+}
+.dash-tutor-row { display: grid; grid-template-columns: 160px 1fr 70px 44px 60px; align-items: center; gap: 10px; padding: 6px 0; }
+.dt-gap-header { text-align: right; }
+.dt-gap {
+  font-size: 13px; font-weight: 800; text-align: right;
+  min-width: 50px;
+}
+.dt-gap.gap-neg { color: var(--erro); }
+.dt-gap.gap-pos { color: var(--ok); }
+
+/* ── dica texto ── */
+.dica { font-size: 13px; color: var(--suave); margin: 6px 0 0; line-height: 1.5; }
+
+/* ── campo-select nos campos do Início ── */
+.form-inicio .campo-select {
+  width: 100%;
+  font-size: 16px; color: var(--ink); background: #fff;
+  border: 2px solid var(--linha); border-radius: 12px;
+  padding: 14px 44px 14px 16px; min-height: 52px;
+  outline: none; font-family: var(--fonte); cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2352627a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  transition: border-color .15s;
+}
+.form-inicio .campo-select:focus { border-color: var(--azure); box-shadow: 0 0 0 3px rgba(30,120,200,.15); }
+
+/* Responsivo tutores */
+@media (max-width: 700px) {
+  .dash-tutores-header { display: none; }
+  .dash-tutor-row { grid-template-columns: 1fr auto auto; }
+  .dash-tutor-row .barra-prog-bg { display: none; }
+  .dt-gap { font-size: 12px; }
+}

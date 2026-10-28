@@ -1,32 +1,22 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { IcFechar } from '../../components/Icones.jsx';
+import { PRODUTOS } from '../../lib/produtos.js';
 import { msgErro } from './erros.js';
 
-const PRODUTOS = [
-  { id: 'grad', label: 'Graduação' },
-  { id: 'pos',  label: 'Pós-Graduação' },
-  { id: 'tec',  label: 'Técnico' },
-  { id: 'prof', label: 'Profissionalizante' },
-];
-
-/** Extrai o nome simples do e-mail (ex: "nainanda.soares@..." → "nainanda.soares") */
 function nomeDoEmail(email) {
   return (email || '').split('@')[0] || email || '';
 }
 
 export default function NovaMatricula({ repo, user, processo, campanhas, meta, onFechar }) {
   const tutorPadrao = nomeDoEmail(user?.email || '');
-  const [produto,    setProduto]    = useState('grad');
+  const [produto,    setProduto]    = useState(PRODUTOS[0].id);
   const [quantidade, setQuantidade] = useState(1);
   const [tutor,      setTutor]      = useState(tutorPadrao);
   const [erro,       setErro]       = useState('');
   const [salvando,   setSalvando]   = useState(false);
 
-  // Tutores disponíveis (da meta ou fallback do usuário logado)
-  const tutoresDisponiveis = meta?.tutores?.length
-    ? meta.tutores
-    : [tutorPadrao];
+  const tutoresDisponiveis = meta?.tutores?.length ? meta.tutores : [tutorPadrao];
 
   async function salvar(e) {
     e.preventDefault();
@@ -38,16 +28,16 @@ export default function NovaMatricula({ repo, user, processo, campanhas, meta, o
       const hoje = new Date().toISOString().slice(0, 10);
       await repo.criarMatricula(id, {
         produto,
-        quantidade: Number(quantidade),
+        quantidade:    Number(quantidade),
         tutor,
-        processoId: processo?.id || '',
-        data: hoje,
-        souMais: '',
-        campanha: '',
-        gestor: '',
-        pago_soumais: false,
+        processoId:    processo?.id || '',
+        data:          hoje,
+        souMais:       '',
+        campanha:      '',
+        gestor:        '',
+        pago_soumais:  false,
         pago_campanha: false,
-        pago_gestor: false,
+        pago_gestor:   false,
       });
       onFechar();
     } catch (err) {
@@ -66,7 +56,6 @@ export default function NovaMatricula({ repo, user, processo, campanhas, meta, o
         </header>
 
         <div className="editor-corpo">
-          {/* Produto */}
           <div className="campo">
             <label htmlFor="nm-produto">Produto</label>
             <select id="nm-produto" className="campo-select" value={produto} onChange={(e) => setProduto(e.target.value)}>
@@ -76,29 +65,19 @@ export default function NovaMatricula({ repo, user, processo, campanhas, meta, o
             </select>
           </div>
 
-          {/* Quantidade */}
           <div className="campo">
             <label htmlFor="nm-qtd">Quantidade</label>
             <input
-              id="nm-qtd"
-              type="number"
-              min="1"
-              max="99"
+              id="nm-qtd" type="number" min="1" max="99"
               value={quantidade}
               onChange={(e) => setQuantidade(Math.max(1, Number(e.target.value)))}
               className="campo-input"
             />
           </div>
 
-          {/* Tutor */}
           <div className="campo">
             <label htmlFor="nm-tutor">Tutor</label>
-            <select
-              id="nm-tutor"
-              className="campo-select"
-              value={tutor}
-              onChange={(e) => setTutor(e.target.value)}
-            >
+            <select id="nm-tutor" className="campo-select" value={tutor} onChange={(e) => setTutor(e.target.value)}>
               {tutoresDisponiveis.map((t) => (
                 <option key={t} value={t}>{t}</option>
               ))}

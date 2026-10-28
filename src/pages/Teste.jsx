@@ -12,28 +12,45 @@ import Analisando from './teste/Analisando.jsx';
 import Resultado from './teste/Resultado.jsx';
 import Fim from './teste/Fim.jsx';
 
-const FORM_VAZIO = { nome: '', whatsapp: '', cpf: '', email: '', curso: null, consent: false };
+const FORM_VAZIO = { nome: '', whatsapp: '', cpf: '', email: '', curso: null, consent: false, tutor: '' };
 
 export default function Teste() {
-  const [fase, setFase] = useState('inicio');
-  const [form, setForm] = useState(FORM_VAZIO);
-  const [enviando, setEnviando] = useState(false);
+  const [fase, setFase]           = useState('inicio');
+  const [form, setForm]           = useState(FORM_VAZIO);
+  const [enviando, setEnviando]   = useState(false);
   const [respostas, setRespostas] = useState({});
-  const [passo, setPasso] = useState(0);
-  const [segundos, setSegundos] = useState(0);
+  const [passo, setPasso]         = useState(0);
+  const [segundos, setSegundos]   = useState(0);
   const [resultado, setResultado] = useState(null);
-  const [escolha, setEscolha] = useState(null);
+  const [escolha, setEscolha]     = useState(null);
   const [confirmando, setConfirmando] = useState(false);
-  const [final, setFinal] = useState(null);
-  const leadId = useRef(null);
-  const inicioTeste = useRef(0);
-  const estado = useRef({});
+  const [final, setFinal]         = useState(null);
+  const [tutores, setTutores]     = useState([]);
+  const leadId        = useRef(null);
+  const inicioTeste   = useRef(0);
+  const estado        = useRef({});
   estado.current = { fase, form };
 
-  useEffect(() => { getRepo(); }, []);
+  // Carrega lista de tutores da meta do processo ativo
+  useEffect(() => {
+    getRepo().then((repo) => {
+      // Observa processos para pegar o processo ativo e sua meta
+      const unsubProc = repo.observarProcessos((processos) => {
+        const hoje = new Date().toISOString().slice(0, 10);
+        const ativo = [...processos]
+          .sort((a, b) => (b.inicio || '').localeCompare(a.inicio || ''))
+          .find((p) => p.inicio <= hoje && p.fim >= hoje) || processos[0];
+        if (!ativo) return;
+        repo.observarMeta(ativo.id, (meta) => {
+          if (meta?.tutores?.length) setTutores(meta.tutores);
+        }, () => {});
+      }, () => {});
+      return unsubProc;
+    });
+  }, []);
 
   const novoParticipante = useCallback(() => {
-    leadId.current = null;
+    leadId.current      = null;
     inicioTeste.current = 0;
     setForm(FORM_VAZIO);
     setRespostas({});
@@ -74,13 +91,14 @@ export default function Teste() {
   }, [novoParticipante]);
 
   const dadosBase = () => {
-    const cpfLimpo = apenasDigitos(form.cpf || ''); // '' quando não preenchido
+    const cpfLimpo = apenasDigitos(form.cpf || '');
     return {
-      nome: formatarNome(form.nome),
-      whatsapp: normalizarWhatsapp(form.whatsapp),
-      cpf: cpfLimpo,
-      email: form.email ? form.email.trim() : '',
+      nome:         formatarNome(form.nome),
+      whatsapp:     normalizarWhatsapp(form.whatsapp),
+      cpf:          cpfLimpo,
+      email:        form.email ? form.email.trim() : '',
       consentimento: Boolean(form.consent),
+      tutor:        form.tutor || '',
     };
   };
 
@@ -161,7 +179,7 @@ export default function Teste() {
 
   let tela = null;
   if (fase === 'inicio') {
-    tela = <Inicio form={form} setForm={setForm} onSubmit={aoEnviarInicio} enviando={enviando} />;
+    tela = <Inicio form={form} setForm={setForm} onSubmit={aoEnviarInicio} enviando={enviando} tutores={tutores} />;
   } else if (fase === 'perguntas') {
     const seq = montarSequencia(respostas);
     const pergunta = seq[Math.min(passo, seq.length - 1)];

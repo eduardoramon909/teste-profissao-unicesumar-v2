@@ -39,7 +39,9 @@ export default function LeadModal({ lead, repo, onFechar }) {
   const erros = {};
   if (!nomeValido(f.nome)) erros.nome = 'Informe nome e sobrenome.';
   if (!whatsappValido(f.whatsapp)) erros.whatsapp = 'WhatsApp inválido (DDD + 9 dígitos).';
-  if (!cpfValido(f.cpf)) erros.cpf = 'CPF inválido.';
+  // CPF é opcional — só valida se o usuário digitou algo
+  const cpfDigitos = apenasDigitos(f.cpf || '');
+  if (cpfDigitos.length > 0 && !cpfValido(f.cpf)) erros.cpf = 'CPF inválido.';
   if (f.email.trim() && !emailValido(f.email)) erros.email = 'E-mail inválido.';
   const erro = (k) => (tentou ? erros[k] : undefined);
 
@@ -98,7 +100,7 @@ export default function LeadModal({ lead, repo, onFechar }) {
             <Campo id="e-whats" rotulo="WhatsApp" erro={erro('whatsapp')}>
               <input id="e-whats" type="tel" inputMode="numeric" value={f.whatsapp} onChange={(e) => setF({ ...f, whatsapp: formatarWhatsapp(e.target.value) })} autoComplete="off" />
             </Campo>
-            <Campo id="e-cpf" rotulo="CPF" erro={erro('cpf')}>
+            <Campo id="e-cpf" rotulo="CPF" opcional erro={erro('cpf')}>
               <input id="e-cpf" type="text" inputMode="numeric" value={f.cpf} onChange={(e) => setF({ ...f, cpf: formatarCPF(e.target.value) })} autoComplete="off" />
             </Campo>
           </div>

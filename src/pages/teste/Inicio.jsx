@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CONFIG } from '../../config.js';
 import Campo from '../../components/Campo.jsx';
 import CursoSelect from '../../components/CursoSelect.jsx';
@@ -13,8 +13,8 @@ export function validarForm(f) {
   const e = {};
   if (!nomeValido(f.nome)) e.nome = 'Digite seu nome completo (nome e sobrenome).';
   if (!whatsappValido(f.whatsapp)) e.whatsapp = 'Informe o WhatsApp com DDD. Ex.: (91) 98888-7777';
-  
-  // O CPF agora só é validado se o usuário digitar algo (tornando-o opcional)
+
+  // CPF opcional — valida só se digitado
   const d = apenasDigitos(f.cpf || '');
   if (d.length > 0) {
     if (d.length !== 11) e.cpf = 'O CPF tem 11 números.';
@@ -26,7 +26,9 @@ export function validarForm(f) {
   return e;
 }
 
-export default function Inicio({ form, setForm, onSubmit, enviando }) {
+const OPCAO_PROPRIO = { value: '', label: 'Próprio aluno (sem tutor)' };
+
+export default function Inicio({ form, setForm, onSubmit, enviando, tutores = [] }) {
   const [tentou, setTentou] = useState(false);
   const [tocados, setTocados] = useState({});
   const erros = useMemo(() => validarForm(form), [form]);
@@ -34,6 +36,9 @@ export default function Inicio({ form, setForm, onSubmit, enviando }) {
   const tocar = (campo) => () => setTocados((t) => ({ ...t, [campo]: true }));
   const set = (campo) => (valor) => setForm((f) => ({ ...f, [campo]: valor }));
   const cpfOk = apenasDigitos(form.cpf || '').length === 11 && cpfValido(form.cpf || '');
+
+  // Opções do seletor de tutor
+  const opcoesTutor = [OPCAO_PROPRIO, ...tutores.map((t) => ({ value: t, label: t }))];
 
   function enviar(e) {
     e.preventDefault();
@@ -76,7 +81,6 @@ export default function Inicio({ form, setForm, onSubmit, enviando }) {
             />
           </Campo>
 
-          {/* Foi adicionada a propriedade "opcional" aqui no Campo do CPF */}
           <Campo id="f-cpf" rotulo="CPF" opcional erro={erro('cpf')}>
             <div className="input-ok">
               <input
@@ -103,6 +107,27 @@ export default function Inicio({ form, setForm, onSubmit, enviando }) {
           >
             <CursoSelect id="f-curso" valor={form.curso} onChange={set('curso')} />
           </Campo>
+
+          {/* Campo de tutor — aparece sempre, mas é opcional */}
+          {opcoesTutor.length > 1 && (
+            <Campo
+              id="f-tutor"
+              rotulo="Conduzido por"
+              opcional
+              dica="Selecione o tutor que está acompanhando. Se você está fazendo por conta própria, deixe em branco."
+            >
+              <select
+                id="f-tutor"
+                className="campo-select"
+                value={form.tutor || ''}
+                onChange={(e) => set('tutor')(e.target.value)}
+              >
+                {opcoesTutor.map((op) => (
+                  <option key={op.value} value={op.value}>{op.label}</option>
+                ))}
+              </select>
+            </Campo>
+          )}
 
           {CONFIG.EXIGIR_CONSENTIMENTO && (
             <div className={`campo${erro('consent') ? ' tem-erro' : ''}`}>
