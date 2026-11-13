@@ -148,6 +148,7 @@ const matriculasCol = () => collection(db, 'matriculas');
 const metasCol = () => collection(db, 'metas');
 const processosCol = () => collection(db, 'processos');
 const campanhasCol = () => collection(db, 'campanhas');
+const horariosExcecoesCol = () => collection(db, 'horariosExcecoes');
 
 Object.assign(repo, {
   // ---------- Matrículas ----------
@@ -208,4 +209,25 @@ Object.assign(repo, {
   },
   novoCampanhaId: () => doc(campanhasCol()).id,
   novaProcessoId: () => doc(processosCol()).id,
+
+  // ---------- Horários (escala da equipe) ----------
+  observarHorariosConfig(cb, erro) {
+    return onSnapshot(doc(db, 'horarios', 'config'), (snap) => cb(snap.exists() ? snap.data() : null), erro);
+  },
+  salvarHorariosConfig(dados) {
+    return setDoc(doc(db, 'horarios', 'config'), { ...limpar(dados), atualizadoEm: serverTimestamp() }, { merge: false });
+  },
+  observarHorariosExcecoes(cb, erro) {
+    return onSnapshot(horariosExcecoesCol(), (snap) => {
+      const mapa = {};
+      snap.docs.forEach((d) => { mapa[d.id] = d.data(); });
+      cb(mapa);
+    }, erro);
+  },
+  salvarHorarioExcecao(dataId, dados) {
+    return setDoc(doc(db, 'horariosExcecoes', dataId), { ...limpar(dados), atualizadoEm: serverTimestamp() });
+  },
+  excluirHorarioExcecao(dataId) {
+    return deleteDoc(doc(db, 'horariosExcecoes', dataId));
+  },
 });
