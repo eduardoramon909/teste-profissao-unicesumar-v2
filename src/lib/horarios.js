@@ -11,10 +11,10 @@ export function configVazia() {
   const escalaSemanal = {};
   for (let d = 0; d <= 6; d++) {
     funcionamento[d] = d === 0
-      ? { ativo: false, abre: '', fecha: '' }
+      ? { ativo: false, abre: '', fecha: '', pausaInicio: '', pausaFim: '' }
       : d === 6
-        ? { ativo: true, abre: '08:00', fecha: '12:00' }
-        : { ativo: true, abre: '08:00', fecha: '18:00' };
+        ? { ativo: true, abre: '08:00', fecha: '12:00', pausaInicio: '', pausaFim: '' }
+        : { ativo: true, abre: '08:00', fecha: '18:00', pausaInicio: '', pausaFim: '' };
     escalaSemanal[d] = [];
   }
   return {
@@ -124,15 +124,44 @@ export function faltasDoDia(config, excecao, diaSemana) {
     .map((id) => ({ funcionarioId: id, nome: nomeFuncionario(equipe, id) }));
 }
 
+function paraHHMM(min) {
+  return `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+}
+
 /**
- * Lacunas de cobertura: trechos do horário de funcionamento do dia em que ninguém está
- * escalado. Retorna [] se o polo estiver fechado nesse dia ou se tudo estiver coberto.
+ * Janelas (em minutos) em que o polo fica de fato aberto num dia. Se tiver intervalo de
+ * almoço válido (pausaInicio e pausaFim preenchidos, dentro do abre/fecha), vira duas janelas;
+ * se os campos de almoço ficarem em branco, o polo funciona direto (uma janela só).
  */
-export function lacunasDeCobertura(funcionamentoDia, atribuicoes) {
+export function janelasAbertas(funcionamentoDia) {
   if (!funcionamentoDia?.ativo) return [];
   const abre = minutos(funcionamentoDia.abre);
   const fecha = minutos(funcionamentoDia.fecha);
   if (abre == null || fecha == null || fecha <= abre) return [];
+
+  const pausaInicio = minutos(funcionamentoDia.pausaInicio);
+  const pausaFim = minutos(funcionamentoDia.pausaFim);
+  const temPausa = pausaInicio != null && pausaFim != null
+    && pausaInicio > abre && pausaFim < fecha && pausaFim > pausaInicio;
+
+  return temPausa ? [[abre, pausaInicio], [pausaFim, fecha]] : [[abre, fecha]];
+}
+
+/** Texto pronto pra mostrar na tela, ex.: "08:00–12:00 e 14:00–18:00" ou "08:00–18:00". */
+export function formatarFuncionamento(funcionamentoDia) {
+  const janelas = janelasAbertas(funcionamentoDia);
+  if (janelas.length === 0) return 'Fechado';
+  return janelas.map(([i, f]) => `${paraHHMM(i)}–${paraHHMM(f)}`).join(' e ');
+}
+
+/**
+ * Lacunas de cobertura: trechos dentro do horário de funcionamento do dia (já descontado o
+ * almoço, se houver) em que ninguém está escalado. Retorna [] se o polo estiver fechado
+ * nesse dia ou se tudo estiver coberto.
+ */
+export function lacunasDeCobertura(funcionamentoDia, atribuicoes) {
+  const janelas = janelasAbertas(funcionamentoDia);
+  if (janelas.length === 0) return [];
 
   const intervalos = atribuicoes
     .map((a) => [minutos(a.inicio), minutos(a.fim)])
@@ -140,17 +169,18 @@ export function lacunasDeCobertura(funcionamentoDia, atribuicoes) {
     .sort((a, b) => a[0] - b[0]);
 
   const lacunas = [];
-  let cursor = abre;
-  for (const [i, f] of intervalos) {
-    if (i > cursor) lacunas.push([cursor, Math.min(i, fecha)]);
-    cursor = Math.max(cursor, f);
-    if (cursor >= fecha) break;
+  for (const [abre, fecha] of janelas) {
+    let cursor = abre;
+    for (const [i, f] of intervalos) {
+      if (f <= cursor || i >= fecha) continue; // fora dessa janela
+      const ii = Math.max(i, cursor);
+      if (ii > cursor) lacunas.push([cursor, Math.min(ii, fecha)]);
+      cursor = Math.max(cursor, Math.min(f, fecha));
+      if (cursor >= fecha) break;
+    }
+    if (cursor < fecha) lacunas.push([cursor, fecha]);
   }
-  if (cursor < fecha) lacunas.push([cursor, fecha]);
-  return lacunas.filter(([i, f]) => f > i).map(([i, f]) => ({
-    inicio: `${String(Math.floor(i / 60)).padStart(2, '0')}:${String(i % 60).padStart(2, '0')}`,
-    fim: `${String(Math.floor(f / 60)).padStart(2, '0')}:${String(f % 60).padStart(2, '0')}`,
-  }));
+  return lacunas.filter(([i, f]) => f > i).map(([i, f]) => ({ inicio: paraHHMM(i), fim: paraHHMM(f) }));
 }
 
 /** Soma, em minutos, as horas escaladas de cada funcionário nas datas informadas. */
