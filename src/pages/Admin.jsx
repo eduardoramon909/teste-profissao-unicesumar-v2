@@ -7,7 +7,8 @@ import Metas from './admin/Metas.jsx';
 import SouMais from './admin/SouMais.jsx';
 import Processo from './admin/Processo.jsx';
 import Campanhas from './admin/Campanhas.jsx';
-import { IcDash, IcMeta, IcStar, IcCampanha, IcProcesso, IcPlacar } from '../components/Icones.jsx';
+import Horarios from './admin/Horarios.jsx';
+import { IcDash, IcMeta, IcStar, IcCampanha, IcProcesso, IcPlacar, IcRelogio } from '../components/Icones.jsx';
 
 const ABAS = [
   { id: 'dashboard', label: 'Dashboard', Ic: IcDash },
@@ -16,6 +17,7 @@ const ABAS = [
   { id: 'metas',     label: 'Metas',     Ic: IcMeta },
   { id: 'campanhas', label: 'Campanhas', Ic: IcCampanha },
   { id: 'processo',  label: 'Processo',  Ic: IcProcesso },
+  { id: 'horarios',  label: 'Horários',  Ic: IcRelogio },
 ];
 
 export default function Admin() {
@@ -121,6 +123,9 @@ export default function Admin() {
           )}
           {aba === 'processo' && (
             <Processo repo={repo} processos={processos} />
+          )}
+          {aba === 'horarios' && (
+            <Horarios repo={repo} user={user} />
           )}
         </div>
       </div>
