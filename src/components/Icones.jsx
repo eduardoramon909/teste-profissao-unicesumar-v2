@@ -32,3 +32,5 @@ export const IcMeta = ic(<><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyli
 export const IcCampanha = ic(<><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></>);
 export const IcProcesso = ic(<><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></>);
 export const IcPlacar = ic(<><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></>);
+export const IcCadeado = ic(<><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 018 0v4" /></>);
+export const IcCalendario = ic(<><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>);
