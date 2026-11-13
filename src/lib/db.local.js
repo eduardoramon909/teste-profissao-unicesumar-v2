@@ -3,6 +3,8 @@
 const K_LEADS = 'tp.demo.leads';
 const K_ACOES = 'tp.demo.acoes';
 const K_AUTH = 'tp.demo.auth';
+const K_HORARIOS = 'tp.demo.horarios';
+const K_HORARIOS_EXC = 'tp.demo.horariosExcecoes';
 export const SENHA_DEMO = 'demo';
 
 const ouvintes = new Set();
@@ -122,6 +124,34 @@ const repo = {
     const l = ler(K_LEADS, {});
     delete l[id];
     gravar(K_LEADS, l);
+    return aguardar();
+  },
+
+  // ---------- Horários (escala da equipe) — demo: só neste navegador ----------
+  observarHorariosConfig(cb) {
+    const f = () => cb(ler(K_HORARIOS, null));
+    f();
+    return assinar(f);
+  },
+  salvarHorariosConfig(dados) {
+    gravar(K_HORARIOS, { ...dados, atualizadoEm: Date.now() });
+    return aguardar();
+  },
+  observarHorariosExcecoes(cb) {
+    const f = () => cb(ler(K_HORARIOS_EXC, {}));
+    f();
+    return assinar(f);
+  },
+  salvarHorarioExcecao(dataId, dados) {
+    const e = ler(K_HORARIOS_EXC, {});
+    e[dataId] = { ...dados, atualizadoEm: Date.now() };
+    gravar(K_HORARIOS_EXC, e);
+    return aguardar();
+  },
+  excluirHorarioExcecao(dataId) {
+    const e = ler(K_HORARIOS_EXC, {});
+    delete e[dataId];
+    gravar(K_HORARIOS_EXC, e);
     return aguardar();
   },
 };
