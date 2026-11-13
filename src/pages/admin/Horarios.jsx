@@ -6,7 +6,7 @@ import { msgErro } from './erros.js';
 import {
   DIAS_LABEL, ORDEM_SEMANA, configVazia, novoFuncionarioId,
   formatarDataISO, datasDaSemana, diasDoMes, atribuicoesDoDia, faltasDoDia,
-  lacunasDeCobertura, horasPorFuncionarioNoPeriodo,
+  lacunasDeCobertura, horasPorFuncionarioNoPeriodo, formatarFuncionamento,
 } from '../../lib/horarios.js';
 
 const GESTORA_EMAIL = 'maila.sena@polo.uni';
@@ -271,7 +271,7 @@ function DiaCard({
         <strong>{DIAS_LABEL[diaSemana]}</strong>
         <span>{String(data.getDate()).padStart(2, '0')}/{String(data.getMonth() + 1).padStart(2, '0')}</span>
       </div>
-      <div className="dia-card-horario">{funcDia.ativo ? `Aberto ${funcDia.abre}–${funcDia.fecha}` : 'Fechado'}</div>
+      <div className="dia-card-horario">{funcDia.ativo ? `Aberto ${formatarFuncionamento(funcDia)}` : 'Fechado'}</div>
 
       {lacunas.length > 0 && (
         <div className="gap-alerta">
@@ -394,25 +394,47 @@ function FuncionamentoCard({ config, souGestora, acoes }) {
   return (
     <div className="cartao-adm">
       <h3 className="dash-secao-titulo">Funcionamento do polo</h3>
+      <p className="dica">
+        O intervalo de almoço é opcional: preencha "de / até" só se o polo fechar pro almoço.
+        Deixando em branco, o sistema entende que funciona direto, sem pausa.
+      </p>
       {ORDEM_SEMANA.map((dia) => {
-        const f = config.funcionamento[dia] || { ativo: false, abre: '', fecha: '' };
+        const f = config.funcionamento[dia] || { ativo: false, abre: '', fecha: '', pausaInicio: '', pausaFim: '' };
         return (
-          <div key={dia} className="func-linha">
-            <span className="func-dia-nome">{DIAS_LABEL[dia]}</span>
-            <label className="check pequeno" htmlFor={`ativo-${dia}`}>
-              <input id={`ativo-${dia}`} type="checkbox" checked={!!f.ativo} disabled={!souGestora}
-                onChange={(e) => acoes.atualizarFuncionamento(dia, { ativo: e.target.checked })} />
-              <span className="check-caixa" aria-hidden="true">✓</span>
-              <span className="check-texto">Aberto</span>
-            </label>
+          <div key={dia} className="func-linha" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <span className="func-dia-nome">{DIAS_LABEL[dia]}</span>
+              <label className="check pequeno" htmlFor={`ativo-${dia}`}>
+                <input id={`ativo-${dia}`} type="checkbox" checked={!!f.ativo} disabled={!souGestora}
+                  onChange={(e) => acoes.atualizarFuncionamento(dia, { ativo: e.target.checked })} />
+                <span className="check-caixa" aria-hidden="true">✓</span>
+                <span className="check-texto">Aberto</span>
+              </label>
+              {f.ativo && (
+                <>
+                  <input type="time" className="campo-input" value={f.abre || ''} disabled={!souGestora}
+                    onChange={(e) => acoes.atualizarFuncionamento(dia, { abre: e.target.value })} />
+                  <span className="dica" style={{ margin: 0 }}>até</span>
+                  <input type="time" className="campo-input" value={f.fecha || ''} disabled={!souGestora}
+                    onChange={(e) => acoes.atualizarFuncionamento(dia, { fecha: e.target.value })} />
+                </>
+              )}
+            </div>
             {f.ativo && (
-              <>
-                <input type="time" className="campo-input" value={f.abre || ''} disabled={!souGestora}
-                  onChange={(e) => acoes.atualizarFuncionamento(dia, { abre: e.target.value })} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', paddingLeft: 102 }}>
+                <span className="dica" style={{ margin: 0 }}>Almoço (opcional):</span>
+                <input type="time" className="campo-input" value={f.pausaInicio || ''} disabled={!souGestora}
+                  onChange={(e) => acoes.atualizarFuncionamento(dia, { pausaInicio: e.target.value })} />
                 <span className="dica" style={{ margin: 0 }}>até</span>
-                <input type="time" className="campo-input" value={f.fecha || ''} disabled={!souGestora}
-                  onChange={(e) => acoes.atualizarFuncionamento(dia, { fecha: e.target.value })} />
-              </>
+                <input type="time" className="campo-input" value={f.pausaFim || ''} disabled={!souGestora}
+                  onChange={(e) => acoes.atualizarFuncionamento(dia, { pausaFim: e.target.value })} />
+                {(f.pausaInicio || f.pausaFim) && souGestora && (
+                  <button type="button" className="btn btn-texto" style={{ minHeight: 32, padding: '4px 10px' }}
+                    onClick={() => acoes.atualizarFuncionamento(dia, { pausaInicio: '', pausaFim: '' })}>
+                    Limpar (funciona direto)
+                  </button>
+                )}
+              </div>
             )}
           </div>
         );
